@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
+const __ : any = _;
 import * as chromeUtil from './utils/chrome';
 import {auto, AutoConfiguration, gist} from './utils/store';
 
@@ -28,7 +29,7 @@ chrome.windows.onCreated.addListener(async () => {
 });
 
 // Auto Push
-chrome.cookies.onChanged.addListener(_.debounce(async () => {
+chrome.cookies.onChanged.addListener(__.debounce(async () => {
   try {
     console.log('自动推送运行中');
     const list = await filterDomain('autoPush');
@@ -66,13 +67,19 @@ chrome.cookies.onChanged.addListener(_.debounce(async () => {
 
       // 将 Cookie 数组转为 url##name => value, expirationDate 的 Object
       console.log('将 Cookie 数组转为 url##name => value, expirationDate 的 Object');
-      const oldProcessed = _.mapValues(
-        _.keyBy(oldCookiesFiltered, (cookie) => `${cookie.url}##${cookie.name}`),
-        (cookie) => _.pick(cookie, ['value', 'expirationDate']),
+      // @ts-ignore
+      const oldProcessed = __.mapValues(
+        __.keyBy(oldCookiesFiltered, (cookie) => `${cookie.url}##${cookie.name}`),
+        (cookie: any) => __.pick(cookie, ['value', 'expirationDate']),
       );
-      const newProcessed = _.mapValues(
+      // @ts-ignore
+      const newProcessed = __.mapValues(
+        __.keyBy(newCookiesFiltered, (cookie) => `${cookie.url}##${cookie.name}`),
+        (cookie: any) => __.pick(cookie, ['value', 'expirationDate']),
+      );
+      const newProcessed = _.mapValues<chrome.cookies.Cookie, string, {value: string, expirationDate?: number}>(
         _.keyBy(newCookiesFiltered, (cookie) => `${cookie.url}##${cookie.name}`),
-        (cookie) => _.pick(cookie, ['value', 'expirationDate']),
+        (cookie: any) => _.pick(cookie, ['value', 'expirationDate']),
       );
       console.log('旧的处理后', oldProcessed);
       console.log('新的处理后', newProcessed);

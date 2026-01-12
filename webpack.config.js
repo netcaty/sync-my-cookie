@@ -36,6 +36,7 @@ function create(file) {
   }
   return {
     mode: isProduction ? 'production' : 'development',
+    devtool: isProduction ? 'source-map' : false,
     entry: file,
     output: {
       filename: `${name}.js`,
@@ -43,9 +44,6 @@ function create(file) {
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
-      alias: {
-        '@ant-design/icons/lib/dist$': path.resolve(__dirname, './src/icons.ts'),
-      },
     },
     module: {
       rules: [
@@ -55,6 +53,12 @@ function create(file) {
             { loader: 'babel-loader' },
             { loader: 'awesome-typescript-loader' },
           ]
+        },
+        {
+          test: /\.css$/,
+          use: getStyleLoaders({
+            importLoaders: 1,
+          }),
         },
         {
           test: /\.(scss|sass)$/,
@@ -107,7 +111,7 @@ function getStyleLoaders(cssOptions, preProcessor, preProcessorOptions) {
       loader: 'postcss-loader',
       options: {
         // Necessary for external CSS imports to work
-        // https://github.com/facebook/create-react-app/issues/2677
+        // https://github/facebook/create-react-app/issues/2677
         ident: 'postcss',
         plugins: () => [
           require('postcss-flexbugs-fixes'),

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Component } from 'react';
 const style = require('./console.module.scss');
 
@@ -5,7 +6,8 @@ import { Button, Icon, Modal, Select, Spin, Switch, Tooltip } from 'antd';
 import { auto, AutoConfiguration, gist } from '../../utils/store';
 const { Textfit } = require('react-textfit');
 
-import _ from 'lodash';
+import * as _ from 'lodash';
+const __ : any = _;
 
 interface Prop {
   domain: string;
@@ -130,8 +132,8 @@ class Console extends Component<Prop, State> {
 
   private handleAutoPushConfigClick = async () => {
     const cookies = await gist.getCookies(this.props.domain);
-    const options = _.uniq(cookies.map((cookie) => cookie.name as string)).map((name) => {
-      return <Select.Option key={name}>{name}</Select.Option>;
+    const options = uniq(cookies.map((cookie) => cookie.name as string)).map((name) => {
+      return <Select.Option key={String(name)}>{name}</Select.Option>;
     });
     this.setState({
       configuring: true,

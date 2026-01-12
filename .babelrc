@@ -1,7 +1,10 @@
 {
   "plugins": [
-    ["lodash"],
-    ["import", { "libraryName": "antd", "style": true }],
+    ["import", {
+      "libraryName": "antd",
+      "libraryDirectory": "es",
+      "style": "css"
+    }, "antd"]
   ],
   "presets": [
     "@babel/react",
