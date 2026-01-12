@@ -1,0 +1,51 @@
+name: Build and Release CRX
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Build
+      run: yarn build
+
+    - name: Install CRX tool
+      run: npm install -g crx
+
+    - name: Generate private key
+      run: openssl genrsa -out key.pem 2048
+
+    - name: Package CRX
+      run: crx pack build -o sync-my-cookie.crx -p key.pem
+
+    - name: Package ZIP
+      run: zip -r sync-my-cookie.zip build/
+
+    - name: Create Release and Upload Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: sync-my-cookie.crx sync-my-cookie.zip
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

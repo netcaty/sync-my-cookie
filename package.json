@@ -7,10 +7,10 @@
   "author": "Andie <zchangan@163.com>",
   "license": "MIT",
   "scripts": {
-    "build": "yarn clean && node ./scripts/copyFiles.js && set NODE_ENV=production && npx webpack",
-    "dev:chrome": "node ./scripts/copyFiles.js && set NODE_ENV=production && npx webpack --watch",
+    "build": "yarn clean && node ./scripts/copyFiles.js && cross-env NODE_ENV=production && npx webpack",
+    "dev:chrome": "node ./scripts/copyFiles.js && cross-env NODE_ENV=production && npx webpack --watch",
     "dev:web": "npx webpack-dev-server",
-    "clean": "if exist build rmdir /s /q build && mkdir build",
+    "clean": "node -e \"require('fs-extra').emptyDirSync('build')\"",
     "lint": "tslint -p ."
   },
   "browserslist": [
@@ -36,6 +36,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-import": "^1.11.0",
     "babel-plugin-lodash": "^3.3.4",
+    "cross-env": "^10.1.0",
     "css-loader": "^2.1.0",
     "fs-extra": "^7.0.1",
     "html-webpack-plugin": "^3.2.0",
