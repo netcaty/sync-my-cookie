@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-const __ : any = _;
+const __: any = _;
 import * as chromeUtil from './utils/chrome';
 import {auto, AutoConfiguration, gist} from './utils/store';
 

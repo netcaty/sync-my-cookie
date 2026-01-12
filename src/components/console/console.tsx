@@ -7,7 +7,7 @@ import { auto, AutoConfiguration, gist } from '../../utils/store';
 const { Textfit } = require('react-textfit');
 
 import * as _ from 'lodash';
-const __ : any = _;
+const __: any = _;
 
 interface Prop {
   domain: string;
