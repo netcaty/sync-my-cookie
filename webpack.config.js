@@ -19,7 +19,6 @@ function create(file) {
     new LodashModuleReplacementPlugin(),
     new webpack.ProvidePlugin({
       fetch: ['whatwg-fetch', 'default'],
-      XMLHttpRequest: ['xhr2', 'default'],
     }),
   ];
   if (ext === '.tsx') {

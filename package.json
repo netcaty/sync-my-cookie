@@ -9,6 +9,7 @@
   "scripts": {
     "build": "yarn clean && node ./scripts/copyFiles.js && cross-env NODE_ENV=production && npx webpack",
     "dev:chrome": "node ./scripts/copyFiles.js && cross-env NODE_ENV=production && npx webpack --watch",
+    "dev:verify": "node ./scripts/copyFiles.js && cross-env NODE_ENV=production && npx webpack",
     "dev:web": "npx webpack-dev-server",
     "clean": "node -e \"require('fs-extra').emptyDirSync('build')\"",
     "lint": "echo 'lint disabled'"

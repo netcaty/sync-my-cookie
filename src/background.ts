@@ -1,3 +1,4 @@
+import './xhr-polyfill';
 import * as _ from 'lodash';
 const __: any = _;
 import * as chromeUtil from './utils/chrome';
@@ -199,10 +200,10 @@ chrome.cookies.onChanged.addListener(__.debounce(async () => {
 }, DEBOUNCE_DELAY));
 
 function badge(text: string, color: string = 'red', delay: number = 10000) {
-  chrome.browserAction.setBadgeText({text});
-  chrome.browserAction.setBadgeBackgroundColor({color});
+  chrome.action.setBadgeText({text});
+  chrome.action.setBadgeBackgroundColor({color});
   setTimeout(() => {
-    chrome.browserAction.setBadgeText({text: ''});
+    chrome.action.setBadgeText({text: ''});
   }, delay);
 }
 
