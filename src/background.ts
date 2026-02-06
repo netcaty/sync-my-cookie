@@ -1,4 +1,3 @@
-import 'whatwg-fetch';
 import './xhr-polyfill';
 import * as _ from 'lodash';
 const __: any = _;
@@ -51,7 +50,9 @@ async function performRefresh() {
       }
       await chromeUtil.importCookies(cookies);
       const url = buildUrlFromDomain(domain);
-      await fetch(url, { mode: 'no-cors' });
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.send();
       console.log(`[${done}/${domains.length}] 已后台访问 ${domain}`);
       done++;
     } catch (err) {
