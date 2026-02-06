@@ -46,7 +46,7 @@ class RefreshConfig extends Component<Prop, State> {
               <div className='refresh-header'>
                 <span>
                   <Icon type='clock-circle' style={{ marginRight: 8 }} />
-                  自动刷新配置
+                  自动刷新cookie
                 </span>
                 <Switch
                   size='small'
