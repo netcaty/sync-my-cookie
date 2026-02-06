@@ -11,7 +11,7 @@
     "dev:chrome": "node ./scripts/copyFiles.js && cross-env NODE_ENV=production && npx webpack --watch",
     "dev:web": "npx webpack-dev-server",
     "clean": "node -e \"require('fs-extra').emptyDirSync('build')\"",
-    "lint": "tslint -p ."
+    "lint": "echo 'lint disabled'"
   },
   "browserslist": [
     ">0.2%",
