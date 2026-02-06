@@ -1,0 +1,43 @@
+.refresh-config {
+  margin-bottom: 10px;
+
+  .refresh-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-right: 8px;
+
+    > span {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .refresh-content {
+    padding: 8px 0;
+  }
+
+  .refresh-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .label {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+
+    .domain-select {
+      flex: 1;
+      max-width: 180px;
+    }
+  }
+}

@@ -3,10 +3,11 @@ import ReactDom from 'react-dom';
 const style = require('./popup.module.scss');
 import './global.scss';
 
-import { Modal } from 'antd';
+import { Button, Icon, Modal } from 'antd';
 import Console from './components/console/console';
 import Domains from './components/domain-list/domain-list';
 import Setting from './components/setting/setting';
+import RefreshConfig from './components/refresh-config/refresh-config';
 
 import * as chromeUtils from './utils/chrome';
 import { autoConfig, gist } from './utils/store';
@@ -30,10 +31,31 @@ class Popup extends Component<{}, State> {
   public render() {
     return this.state.isSetting ? (
       <div className={style.wrapper}>
+        <div className={style.header}>
+          <Button
+            type='link'
+            icon='left'
+            onClick={this.handleSet}
+          >
+            返回
+          </Button>
+        </div>
         <Setting onSet={this.handleSet} />
       </div>
     ) : (
       <div className={style.wrapper}>
+        <div className={style.toolbar}>
+          <div className={style.refreshConfigWrapper}>
+            <RefreshConfig domains={this.state.domainList} />
+          </div>
+          <Button
+            type='link'
+            icon='setting'
+            onClick={this.handleOpenSettings}
+          >
+            设置
+          </Button>
+        </div>
         <Console
           domain={this.state.currentDomain}
           canMerge={this.state.domainList.includes(this.state.currentDomain)}
@@ -140,6 +162,12 @@ class Popup extends Component<{}, State> {
       isSetting: false,
     });
     this.initGist();
+  }
+
+  private handleOpenSettings = () => {
+    this.setState({
+      isSetting: true,
+    });
   }
 
   private async initGist() {

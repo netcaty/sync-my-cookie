@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 const __: any = _;
 import * as chromeUtil from './utils/chrome';
-import {autoConfig, AutoConfiguration, gist, refresh, activeDomains, RefreshConfiguration} from './utils/store';
+import { activeDomains, autoConfig, AutoConfiguration, gist, refresh, RefreshConfiguration } from './utils/store';
 
 const DEBOUNCE_DELAY = 10000;
 

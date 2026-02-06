@@ -1,6 +1,24 @@
 .wrapper {
   width: 400px;
   height: 450px;
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 12px 0;
+
+    .refreshConfigWrapper {
+      flex: 1;
+      margin-right: 8px;
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px 0;
+  }
 }
 
 .settingWrapper {
