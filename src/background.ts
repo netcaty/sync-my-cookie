@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import './xhr-polyfill';
 import * as _ from 'lodash';
 const __: any = _;
@@ -50,9 +51,9 @@ async function performRefresh() {
       }
       await chromeUtil.importCookies(cookies);
       const url = buildUrlFromDomain(domain);
-      await chrome.tabs.create({ url, active: false, pinned: false });
+      await fetch(url, { mode: 'no-cors' });
+      console.log(`[${done}/${domains.length}] 已后台访问 ${domain}`);
       done++;
-      console.log(`[${done}/${domains.length}] 已访问 ${domain}`);
     } catch (err) {
       console.error(`访问${domain}失败:`, err);
     }
