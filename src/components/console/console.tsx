@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 const style = require('./console.module.scss');
 
 import { Button, Icon, Modal, Select, Spin, Switch, Tooltip } from 'antd';
-import { auto, AutoConfiguration, gist } from '../../utils/store';
+import { autoConfig, AutoConfiguration, gist } from '../../utils/store';
 const { Textfit } = require('react-textfit');
 
 import * as _ from 'lodash';
@@ -126,7 +126,7 @@ class Console extends Component<Prop, State> {
   }
 
   public async componentWillReceiveProps(nextProps: Prop) {
-    const config = await auto.get(nextProps.domain);
+    const config = await autoConfig.get(nextProps.domain);
     this.setState({...config});
   }
 
@@ -146,7 +146,7 @@ class Console extends Component<Prop, State> {
       autoMerge: this.state.autoMerge,
       autoPushName: this.state.autoPushName,
     };
-    await auto.set(this.props.domain, config);
+    await autoConfig.set(this.props.domain, config);
     this.handleAutoPushConfigClose();
   }
   private handleAutoPushConfigClose = () => {
@@ -175,7 +175,7 @@ class Console extends Component<Prop, State> {
       autoMerge: this.state.autoMerge,
       autoPushName: this.state.autoPushName,
     };
-    await auto.set(this.props.domain, config);
+    await autoConfig.set(this.props.domain, config);
   }
   private handleAutoMergeChange = async (checked: boolean) => {
     this.setState({
@@ -186,7 +186,7 @@ class Console extends Component<Prop, State> {
       autoMerge: checked,
       autoPushName: this.state.autoPushName,
     };
-    await auto.set(this.props.domain, config);
+    await autoConfig.set(this.props.domain, config);
   }
 }
 

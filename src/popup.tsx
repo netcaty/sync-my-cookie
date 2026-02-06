@@ -9,7 +9,7 @@ import Domains from './components/domain-list/domain-list';
 import Setting from './components/setting/setting';
 
 import * as chromeUtils from './utils/chrome';
-import { auto, gist } from './utils/store';
+import { autoConfig, gist } from './utils/store';
 import { getDomain, move2Front } from './utils/utils';
 
 interface State {
@@ -72,7 +72,7 @@ class Popup extends Component<{}, State> {
         okType: 'danger',
         cancelText: 'No',
         async onOk() {
-          await auto.remove(domain);
+          await autoConfig.remove(domain);
           const domainList = await gist.remove(domain, that.state.domainList);
           let currentDomain: string;
           if (domainList.length === 0) {

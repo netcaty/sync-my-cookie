@@ -53,33 +53,81 @@ export interface AutoConfiguration {
   autoPushName: string[];
 }
 
-export const auto = {
+export interface RefreshConfiguration {
+  enabled: boolean;
+  interval: number;
+}
+
+async function getAllAutoConfig(): Promise<Map<string, AutoConfiguration>> {
+  const json = await chromeLocal.get(keys.AUTO_CONFIG_KEY) || '[]';
+  return new Map(JSON.parse(json));
+}
+
+export const autoConfig = {
   async get(domain: string): Promise<AutoConfiguration> {
-    const origin = await auto.getAll();
+    const origin = await getAllAutoConfig();
     const result = origin.get(domain);
     return result || {autoPush: false, autoMerge: false, autoPushName: []};
   },
   async set(domain: string, config: AutoConfiguration) {
-    const origin = await auto.getAll();
+    const origin = await getAllAutoConfig();
     origin.set(domain, config);
     await chromeLocal.set(keys.AUTO_CONFIG_KEY, JSON.stringify([...origin]));
   },
   async getAutoPush(): Promise<Array<[string, AutoConfiguration]>> {
-    const origin = await auto.getAll();
+    const origin = await getAllAutoConfig();
     return [...origin].filter(([_, config]) => config.autoPush);
   },
   async getAutoMerge(): Promise<Array<[string, AutoConfiguration]>> {
-    const origin = await auto.getAll();
+    const origin = await getAllAutoConfig();
     return [...origin].filter(([_, config]) => config.autoMerge);
   },
   async getAll(): Promise<Map<string, AutoConfiguration>> {
-    const json = await chromeLocal.get(keys.AUTO_CONFIG_KEY) || '[]';
-    return new Map(JSON.parse(json));
+    return getAllAutoConfig();
   },
   async remove(domain: string) {
-    const origin = await auto.getAll();
+    const origin = await getAllAutoConfig();
     origin.delete(domain);
     await chromeLocal.set(keys.AUTO_CONFIG_KEY, JSON.stringify([...origin]));
+  },
+};
+
+export const refresh = {
+  async get(): Promise<RefreshConfiguration> {
+    const json = await chromeLocal.get(keys.REFRESH_CONFIG_KEY);
+    if (json) {
+      return JSON.parse(json);
+    }
+    return { enabled: false, interval: 60 };
+  },
+  async set(config: RefreshConfiguration) {
+    await chromeLocal.set(keys.REFRESH_CONFIG_KEY, JSON.stringify(config));
+  },
+};
+
+async function getActiveDomainsList(): Promise<string[]> {
+  const json = await chromeLocal.get(keys.ACTIVE_DOMAINS_KEY);
+  return JSON.parse(json || '[]');
+}
+
+export const activeDomains = {
+  async get(): Promise<string[]> {
+    return getActiveDomainsList();
+  },
+  async set(domains: string[]) {
+    await chromeLocal.set(keys.ACTIVE_DOMAINS_KEY, JSON.stringify(domains));
+  },
+  async add(domain: string) {
+    const list = await getActiveDomainsList();
+    if (!list.includes(domain)) {
+      list.push(domain);
+      await activeDomains.set(list);
+    }
+  },
+  async remove(domain: string) {
+    const list = await getActiveDomainsList();
+    const filtered = list.filter(d => d !== domain);
+    await activeDomains.set(filtered);
   },
 };
 

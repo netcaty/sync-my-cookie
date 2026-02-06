@@ -1,11 +1,87 @@
 import * as _ from 'lodash';
 const __: any = _;
 import * as chromeUtil from './utils/chrome';
-import {auto, AutoConfiguration, gist} from './utils/store';
+import {autoConfig, AutoConfiguration, gist, refresh, activeDomains, RefreshConfiguration} from './utils/store';
 
 const DEBOUNCE_DELAY = 10000;
 
 /* tslint:disable no-console */
+
+let refreshTimer: number | null = null;
+
+async function startRefreshTimer() {
+  if (refreshTimer) {
+    clearTimeout(refreshTimer);
+  }
+  const config = await refresh.get();
+  if (!config.enabled) {
+    console.log('Auto refresh is disabled');
+    return;
+  }
+  const intervalMs = config.interval * 60 * 1000;
+  console.log(`Auto refresh enabled, interval: ${config.interval} minutes`);
+  refreshTimer = setTimeout(async () => {
+    await performRefresh();
+    startRefreshTimer();
+  }, intervalMs) as unknown as number;
+}
+
+async function performRefresh() {
+  console.log('执行定时访问...');
+  const domains = await activeDomains.get();
+  if (domains.length === 0) {
+    console.log('没有需要定期访问的域名');
+    return;
+  }
+  console.log(`共${domains.length}个域名需要定期访问：${domains.join(',')}`);
+  const ready = await gist.init();
+  if (!ready) {
+    console.log('Gist未初始化');
+    return;
+  }
+  let done = 0;
+  for (const domain of domains) {
+    try {
+      const cookies = await gist.getCookies(domain);
+      if (cookies.length === 0) {
+        console.log(`域名${domain}没有Cookie，跳过`);
+        continue;
+      }
+      await chromeUtil.importCookies(cookies);
+      const url = buildUrlFromDomain(domain);
+      await chrome.tabs.create({ url, active: false, pinned: false });
+      done++;
+      console.log(`[${done}/${domains.length}] 已访问 ${domain}`);
+    } catch (err) {
+      console.error(`访问${domain}失败:`, err);
+    }
+  }
+  if (done) {
+    badge(`↻${done}`);
+  }
+}
+
+function buildUrlFromDomain(domain: string): string {
+  if (domain.startsWith('.')) {
+    domain = domain.substr(1);
+  }
+  return `https://${domain}`;
+}
+
+async function stopRefreshTimer() {
+  if (refreshTimer) {
+    clearTimeout(refreshTimer);
+    refreshTimer = null;
+  }
+}
+
+chrome.runtime.onInstalled.addListener(async () => {
+  await startRefreshTimer();
+});
+
+chrome.runtime.onStartup.addListener(async () => {
+  await startRefreshTimer();
+});
 
 // Auto Merge
 chrome.windows.onCreated.addListener(async () => {
@@ -133,9 +209,9 @@ function badge(text: string, color: string = 'red', delay: number = 10000) {
 async function filterDomain(type: 'autoPush' | 'autoMerge'): Promise<Array<[string, AutoConfiguration]>> {
   let list: Array<[string, AutoConfiguration]>;
   if (type === 'autoPush') {
-    list = await auto.getAutoPush();
+    list = await autoConfig.getAutoPush();
   } else {
-    list = await auto.getAutoMerge();
+    list = await autoConfig.getAutoMerge();
   }
   if (list.length) {
     const ready = await gist.init();
