@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = [
@@ -17,7 +17,10 @@ function create(file) {
   const ext = parsed.ext;
   const plugins = [
     new LodashModuleReplacementPlugin(),
-    // new BundleAnalyzerPlugin(),
+    new webpack.ProvidePlugin({
+      fetch: ['whatwg-fetch', 'default'],
+      XMLHttpRequest: ['xhr2', 'default'],
+    }),
   ];
   if (ext === '.tsx') {
     plugins.push(new HtmlWebpackPlugin({
@@ -42,6 +45,7 @@ function create(file) {
       filename: `${name}.js`,
       path: path.resolve(__dirname, './build'),
     },
+    cache: true,
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },
@@ -49,6 +53,7 @@ function create(file) {
       rules: [
         {
           test: /\.tsx?$/,
+          exclude: /node_modules/,
           use: [
             { loader: 'babel-loader' },
             { loader: 'awesome-typescript-loader' },
@@ -56,40 +61,24 @@ function create(file) {
         },
         {
           test: /\.css$/,
-          use: getStyleLoaders({
-            importLoaders: 1,
-          }),
+          use: getStyleLoaders({ importLoaders: 1 }),
         },
         {
           test: /\.(scss|sass)$/,
           exclude: /\.module\.(scss|sass)$/,
-          use: getStyleLoaders(
-            {
-              importLoaders: 2,
-            },
-            'sass-loader'
-          ),
+          use: getStyleLoaders({ importLoaders: 2 }, 'sass-loader'),
         },
         {
           test: /\.module\.(scss|sass)$/,
-          use: getStyleLoaders(
-            {
-              importLoaders: 2,
-              modules: true,
-              localIdentName: '[name]__[local]__[hash:base64:5]'
-            },
-            'sass-loader'
-          ),
+          use: getStyleLoaders({
+            importLoaders: 2,
+            modules: true,
+            localIdentName: '[name]__[local]__[hash:base64:5]'
+          }, 'sass-loader'),
         },
         {
           test: /.less$/,
-          use: getStyleLoaders(
-            {
-              importLoaders: 2,
-            },
-            'less-loader',
-            { javascriptEnabled: true },
-          ),
+          use: getStyleLoaders({ importLoaders: 2 }, 'less-loader', { javascriptEnabled: true }),
         },
       ],
     },
@@ -100,36 +89,11 @@ function create(file) {
 function getStyleLoaders(cssOptions, preProcessor, preProcessorOptions) {
   const loaders = [
     isProduction ? { loader: MiniCssExtractPlugin.loader } : 'style-loader',
-    {
-      loader: 'css-loader',
-      options: cssOptions,
-    },
-    {
-      // Options for PostCSS as we reference these options twice
-      // Adds vendor prefixing based on your specified browser support in
-      // package.json
-      loader: 'postcss-loader',
-      options: {
-        // Necessary for external CSS imports to work
-        // https://github/facebook/create-react-app/issues/2677
-        ident: 'postcss',
-        plugins: () => [
-          require('postcss-flexbugs-fixes'),
-          require('postcss-preset-env')({
-            autoprefixer: {
-              flexbox: 'no-2009',
-            },
-            stage: 3,
-          }),
-        ],
-      },
-    },
+    { loader: 'css-loader', options: cssOptions },
+    { loader: 'postcss-loader', options: { ident: 'postcss' } },
   ];
   if (preProcessor) {
-    loaders.push({
-      loader: preProcessor,
-      options: preProcessorOptions,
-    });
+    loaders.push({ loader: preProcessor, options: preProcessorOptions });
   }
   return loaders;
 };
